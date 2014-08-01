@@ -11,16 +11,6 @@ namespace CrystalScheduler
         private List<ScheduledReport> _scheduledReportList;
         private DataTable _dataTable;
 
-        private const string _ID = "ID";
-        private const string _REPORT = "Report";
-        private const string _FILE_NAME = "File Name";
-        private const string _FILE_PATH = "File Path";
-        private const string _NAME = "Name";
-        private const string _DESCRIPTION = "Description";
-        private const string _PARAMETERS = "Parameters";
-        private const string _SCHEDULE = "Schedule";
-        private const string _OUTPUT = "Output";
-
         public SchedulerDashboard()
         {
             InitializeComponent();
@@ -36,15 +26,15 @@ namespace CrystalScheduler
             dgvScheduledReports.AllowDrop = false;
 
             _dataTable = new DataTable();
-            _dataTable.Columns.Add(_ID).ReadOnly = true;
-            _dataTable.Columns.Add(_REPORT).ReadOnly = true;
-            _dataTable.Columns.Add(_NAME).ReadOnly = true;
-            _dataTable.Columns.Add(_DESCRIPTION).ReadOnly = true;
-            _dataTable.Columns.Add(_FILE_PATH).ReadOnly = true;
-            _dataTable.Columns.Add(_FILE_NAME).ReadOnly = true;
-            _dataTable.Columns.Add(_PARAMETERS).ReadOnly = true;
-            _dataTable.Columns.Add(_SCHEDULE).ReadOnly = true;
-            _dataTable.Columns.Add(_OUTPUT).ReadOnly = true;
+            _dataTable.Columns.Add(CrystalScheduler._ID).ReadOnly = true;
+            _dataTable.Columns.Add(CrystalScheduler._REPORT).ReadOnly = true;
+            _dataTable.Columns.Add(CrystalScheduler._NAME).ReadOnly = true;
+            _dataTable.Columns.Add(CrystalScheduler._DESCRIPTION).ReadOnly = true;
+            _dataTable.Columns.Add(CrystalScheduler._FILE_PATH).ReadOnly = true;
+            _dataTable.Columns.Add(CrystalScheduler._FILE_NAME).ReadOnly = true;
+            _dataTable.Columns.Add(CrystalScheduler._PARAMETERS).ReadOnly = true;
+            _dataTable.Columns.Add(CrystalScheduler._SCHEDULE).ReadOnly = true;
+            _dataTable.Columns.Add(CrystalScheduler._OUTPUT).ReadOnly = true;
         }
 
         private void LoadReportGrid()
@@ -59,20 +49,20 @@ namespace CrystalScheduler
                 foreach (ScheduledReport scheduledReport in _scheduledReportList)
                 {
                     dataRow = _dataTable.NewRow();
-                    dataRow[_ID] = scheduledReport.ScheduledReportID;
-                    dataRow[_REPORT] = scheduledReport.Report;
-                    dataRow[_FILE_NAME] = scheduledReport.FileName;
-                    dataRow[_FILE_PATH] = scheduledReport.FilePath;
-                    dataRow[_NAME] = scheduledReport.Name;
-                    dataRow[_DESCRIPTION] = scheduledReport.Description;
-                    dataRow[_PARAMETERS] = SerializeParameter(scheduledReport.Parameters);
-                    dataRow[_SCHEDULE] = SerializeSchedule(scheduledReport.Schedule);
-                    dataRow[_OUTPUT] = SerializeOutput(scheduledReport.Output);
+                    dataRow[CrystalScheduler._ID] = scheduledReport.ScheduledReportID;
+                    dataRow[CrystalScheduler._REPORT] = scheduledReport.Report;
+                    dataRow[CrystalScheduler._FILE_NAME] = scheduledReport.FileName;
+                    dataRow[CrystalScheduler._FILE_PATH] = scheduledReport.FilePath;
+                    dataRow[CrystalScheduler._NAME] = scheduledReport.Name;
+                    dataRow[CrystalScheduler._DESCRIPTION] = scheduledReport.Description;
+                    dataRow[CrystalScheduler._PARAMETERS] = SerializeParameter(scheduledReport.Parameters);
+                    dataRow[CrystalScheduler._SCHEDULE] = SerializeSchedule(scheduledReport.Schedule);
+                    dataRow[CrystalScheduler._OUTPUT] = SerializeOutput(scheduledReport.Output);
                     _dataTable.Rows.Add(dataRow);
                 }
 
                 dgvScheduledReports.DataSource = _dataTable;
-                dgvScheduledReports.Columns[_ID].Visible = false;
+                dgvScheduledReports.Columns[CrystalScheduler._ID].Visible = false;
                 dgvScheduledReports.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                 dgvScheduledReports.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                 dgvScheduledReports.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
@@ -303,7 +293,7 @@ namespace CrystalScheduler
         {
             if (dgvScheduledReports.CurrentRow != null)
             {
-                int id = Convert.ToInt32(dgvScheduledReports.SelectedRows[0].Cells[_ID].Value);
+                int id = Convert.ToInt32(dgvScheduledReports.SelectedRows[0].Cells[CrystalScheduler._ID].Value);
                 ScheduledReport scheduledReport = DataAccess.GetScheduledReportByID(id);
                 ReportScheduler reportScheduler = null;
                 try
@@ -334,7 +324,7 @@ namespace CrystalScheduler
                 try
                 {
                     this.UseWaitCursor = true;
-                    int id = Convert.ToInt32(dgvScheduledReports.SelectedRows[0].Cells[_ID].Value);
+                    int id = Convert.ToInt32(dgvScheduledReports.SelectedRows[0].Cells[CrystalScheduler._ID].Value);
                     DataAccess.DuplicateScheduledReport(id);
                     LoadReportGrid();
                 }
@@ -359,7 +349,7 @@ namespace CrystalScheduler
                     try
                     {
                         this.UseWaitCursor = true;
-                        int id = Convert.ToInt32(dgvScheduledReports.SelectedRows[0].Cells[_ID].Value);
+                        int id = Convert.ToInt32(dgvScheduledReports.SelectedRows[0].Cells[CrystalScheduler._ID].Value);
                         DataAccess.DeleteScheduledReport(id);
                         LoadReportGrid();
                     }

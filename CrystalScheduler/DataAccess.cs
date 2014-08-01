@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlServerCe;
+using TaskScheduler;
 
 namespace CrystalScheduler
 {
@@ -203,9 +204,91 @@ namespace CrystalScheduler
         internal static void SaveScheduledReport(ScheduledReport scheduledReport)
         {
             if (scheduledReport.ScheduledReportID == 0)
+            {
+                CreateWindowsTask(scheduledReport);
                 InsertScheduledReport(scheduledReport);
+            }
             else
+            {
+                UpdateWindowsTask(scheduledReport);
                 UpdateScheduledReport(scheduledReport);
+            }
+        }
+
+        private static void CreateWindowsTask(ScheduledReport scheduledReport)
+        {
+            ITaskService taskService = new TaskScheduler.TaskScheduler();
+            taskService.Connect();
+
+            ITaskDefinition taskDefinition = taskService.NewTask(0);
+            taskDefinition.RegistrationInfo.Description = scheduledReport.Description;
+            taskDefinition.Settings.Enabled = true;
+            taskDefinition.Settings.Hidden = true;
+            taskDefinition.Settings.Compatibility = _TASK_COMPATIBILITY.TASK_COMPATIBILITY_V2_1;
+            taskDefinition.Settings.WakeToRun = true;
+
+            ITriggerCollection triggers = taskDefinition.Triggers;
+            ITrigger trigger;
+            switch (scheduledReport.Schedule.Frequency)
+            {
+                case "Daily":
+                    trigger = triggers.Create(_TASK_TRIGGER_TYPE2.TASK_TRIGGER_DAILY);
+                    //trigger.Repetition = scheduledReport.Schedule.Daily_RecursEveryNDays;
+                    break;
+                case "Weekly":
+                    break;
+                case "Monthly":
+                    break;
+            }
+            
+
+            IActionCollection actions = taskDefinition.Actions;
+            _TASK_ACTION_TYPE actionType = _TASK_ACTION_TYPE.TASK_ACTION_EXEC;
+            IAction action = actions.Create(actionType);
+            IExecAction execAction = action as IExecAction;
+            execAction.Path = @"C:\HutsonSoftware\CrystalScheduler\Reporter.exe";
+            execAction.Arguments = scheduledReport.TaskName;
+
+            ITaskFolder crystalSchedulerFolder = GetCrystalSchedulerTaskFolder(taskService);
+            crystalSchedulerFolder.RegisterTaskDefinition(
+                scheduledReport.TaskName, 
+                taskDefinition, 
+                6, 
+                null, 
+                null, 
+                _TASK_LOGON_TYPE.TASK_LOGON_NONE, 
+                null);
+        }
+
+        private static ITaskFolder GetCrystalSchedulerTaskFolder(ITaskService taskService)
+        {
+            ITaskFolder crystalSchedulerFolder, hutSoftFolder;
+
+            try
+            {
+                hutSoftFolder = taskService.GetFolder(@"\HutsonSoftware");
+            }
+            catch
+            {
+                taskService.GetFolder(@"\").CreateFolder(@"HutsonSoftware");
+            }
+
+            try
+            {
+                crystalSchedulerFolder = taskService.GetFolder(@"\HutsonSoftware\CrystalScheduler");
+            }
+            catch
+            {
+                taskService.GetFolder(@"\").CreateFolder(@"HutsonSoftware\CrystalScheduler");
+                crystalSchedulerFolder = taskService.GetFolder(@"\HutsonSoftware\CrystalScheduler");
+            }
+
+            return crystalSchedulerFolder;
+        }
+
+        private static void UpdateWindowsTask(ScheduledReport scheduledReport)
+        {
+            
         }
 
         private static void InsertScheduledReport(ScheduledReport scheduledReport)

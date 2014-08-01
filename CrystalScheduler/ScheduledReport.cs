@@ -13,16 +13,42 @@ namespace CrystalScheduler
             FilePath = string.Empty;
             Name = string.Empty;
             Description = string.Empty;
+            TaskName = string.Empty;
             Parameters = new List<ScheduledReportParameter>();
             Schedule = new ScheduledReportSchedule();
             Output = new ScheduledReportOutput();
         }
         public int ScheduledReportID { get; set; }
-        public string Report { get; set; }
+        private string _report = string.Empty;
+        public string Report 
+        {
+            get
+            {
+                return _report;
+            }
+            set
+            {
+                _report = value + "_" + DateTime.Now.ToShortDateString() + DateTime.Now.ToShortTimeString();
+            }
+        }
         public string FileName { get; set; }
         public string FilePath { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        private string _taskName = string.Empty;
+        public string TaskName 
+        { 
+            get 
+            { 
+                if (_taskName == string.Empty)
+                    _taskName = Report; 
+                return _taskName; 
+            }
+            set
+            {
+                _taskName = value;
+            }
+        }
 
         public List<ScheduledReportParameter> Parameters { get; set; }
         public ScheduledReportSchedule Schedule { get; set; }
